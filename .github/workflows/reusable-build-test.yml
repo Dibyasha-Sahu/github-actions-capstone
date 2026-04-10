@@ -16,8 +16,8 @@ on:
         value: ${{ jobs.build-test.outputs.test_result }}
 
 jobs:
-   build-test:
-   runs-on: ubuntu-latest
+  build-test:
+  runs-on: ubuntu-latest
 
    steps:
      - name: Checkout code
