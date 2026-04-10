@@ -1,53 +1,56 @@
-name: resuable build and test
+name: Reusable Build and Test
 
-on: 
+on:
   workflow_call:
     inputs:
       python-version:
         description: "Python version to use"
         required: true
+        type: string
         default: "3.9"
       run_tests:
         type: boolean
         default: true
     outputs:
-      test_results:
+      test_result:
         description: "Result of the test execution"
         value: ${{ jobs.build-test.outputs.test_result }}
 
 jobs:
   build-test:
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  steps:
-     - name: Checkout code
-       uses: actions/checkout@v4
+    outputs:
+      test_result: ${{ steps.set-results.outputs.result }}
 
-     - name: set up python
-       uses: actions/setup-python@v5
-       with:
-        python-version: ${{ inputs.python-version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-     - name: install dependencies
-       run: |
-         if [-f requirements.txt]; then
-           pip install -r requirements.txt
-         fi
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
 
-     - name: Run tests
-       id : run-tests
-       if: ${{inputs.run-tests}}  
-       run: |
-         pytest
-       continue-on-error: true    
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
 
-     - name: set test results
-       id: set-results
-       run: |
-         if [ ${{inputs.run-tests}} = false]; then
-           echo "results = skipped" >> $GITHUB_OUTPUT
-         elif [ "${{ steps.run-tests.outcome }}" = "success" ]; then
+      - name: Run tests
+        id: run-tests
+        if: ${{ inputs.run_tests }}
+        run: pytest
+        continue-on-error: true
+
+      - name: Set test results
+        id: set-results
+        run: |
+          if [ "${{ inputs.run_tests }}" = "false" ]; then
+            echo "result=skipped" >> $GITHUB_OUTPUT
+          elif [ "${{ steps.run-tests.outcome }}" = "success" ]; then
             echo "result=passed" >> $GITHUB_OUTPUT
           else
             echo "result=failed" >> $GITHUB_OUTPUT
-          fi                   
+          fi
