@@ -10,8 +10,8 @@ jobs:
   build-test:
     uses: ./.github/workflows/reusable-build-test.yml
     with:
-      python-version: "3.9"
-      run_tests: true
+      python-version: 3.12
+      run_tests: true  
 
   pr-comment:
     runs-on: ubuntu-latest
