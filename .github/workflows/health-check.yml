@@ -1,0 +1,61 @@
+name: health-check.yml
+
+on:
+  schedule:
+    - cron: "0*/12 * * *"
+
+  workflow_dispatch:
+    
+jobs:
+  Health-check:
+    runs-on: ubuntu-latest
+
+    steps:  
+      - name: Login to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login \
+          -u "${{ secrets.DOCKER_USERNAME }}" \
+          --password-stdin
+
+      - name: Pull Latest Docker Image
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/my-web-app:latest
+
+      - name: Run the container      
+        run: |
+          docker run -d \
+          --name myapp \
+          -p 5000:5000 \
+          ${{ secrets.DOCKER_USERNAME }}/my-web-app:latest
+
+      - name: Wait for Application
+        run: sleep 5
+
+      - name: Health Check
+        id: health
+        run: |
+          if curl -f http://localhost:5000/health; then
+            echo "STATUS=PASSED" >> $GITHUB_ENV
+            echo "Health Check Passed"
+          else
+            echo "STATUS=FAILED" >> $GITHUB_ENV
+            echo "Health Check Failed"
+            exit 1
+          fi
+
+      - name: Stop and Remove Container
+        if: always()
+        run: |
+          docker stop myapp
+          docker rm myapp
+
+      - name: Create Summary
+        if: always()
+        run: |
+          echo "## Health Check Report" >> $GITHUB_STEP_SUMMARY
+          echo "- Image: my-web-app:latest" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: $STATUS" >> $GITHUB_STEP_SUMMARY
+          echo "- Time: $(date)" >> $GITHUB_STEP_SUMMARY    
+
+
+
