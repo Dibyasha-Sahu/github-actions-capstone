@@ -20,9 +20,9 @@ jobs:
       image_name: "github-actions-capstone"
       tag: latest
 
-    secrets:
-      docker_username: ${{ secrets.docker_username}}  
-      docker_token: ${{ secrets.docker_token }}
+    secrets:      
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
+      docker_token: ${{ secrets.DOCKER_TOKEN }}
 
   docker-sha:
     needs: docker-latest
@@ -34,8 +34,8 @@ jobs:
       tag: sha-${{ github.sha }}
 
     secrets:
-      docker_username: ${{ secrets.docker_username}}  
-      docker_token: ${{ secrets.docker_token }}  
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
+      docker_token: ${{ secrets.DOCKER_TOKEN }} 
 
 
   deploy:
