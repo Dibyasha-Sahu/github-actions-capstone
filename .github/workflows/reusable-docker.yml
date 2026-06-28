@@ -7,15 +7,19 @@ on:
         description: "Docker image name"
         required: true
         type: string
+
       tag:
         description: "Docker image tag"
         required: true
         type: string
+
     secrets:
       docker_username:
         required: true
+
       docker_token:
         required: true
+
     outputs:
       image_url:
         description: "Full Docker image path"
@@ -23,30 +27,30 @@ on:
 
 jobs:
   docker:
-   runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-   outputs:
+    outputs:
       image_url: ${{ steps.set-output.outputs.image_url }}
 
-   steps:
-     - name: Checkout code
-       uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-     - name: log-in to docker hub
-       uses: action/checkout@v3
-       with:
-         username: ${{ secrets.DOCKER_USERNAME}}
-         password: ${{ secrets.DOCKER_TOKEN}}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.docker_username }}
+          password: ${{ secrets.docker_token }}
 
-     - name: Build Docker image
-       run: |
+      - name: Build Docker image
+        run: |
           docker build -t ${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }} .
 
-     - name: Push Docker image
-       run: |
+      - name: Push Docker image
+        run: |
           docker push ${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }}
 
-     - name: Set image URL
-       id: set-output
-       run: |
-          echo "image_url=${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }}" >> $GITHUB_OUTPUT                     
+      - name: Set image URL
+        id: set-output
+        run: |
+          echo "image_url=${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }}" >> $GITHUB_OUTPUT

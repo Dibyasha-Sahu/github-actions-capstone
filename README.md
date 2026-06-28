@@ -14,3 +14,6 @@ This project is a simple Flask app with a `/health` endpoint, containerized usin
 - open the wsl then bash test.sh
 - docker stop <container name>
 
+
+Updated Docker Hub token.
+
