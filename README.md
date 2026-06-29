@@ -1,114 +1,191 @@
-# 🚀 GitHub Actions Capstone
+# 🚀 GitHub Actions DevSecOps Capstone
 
-A complete GitHub Actions CI/CD pipeline project built with **Python Flask**, **Docker**, and **GitHub Actions**.
-
-The project demonstrates reusable workflows, pull request validation, Docker image build & push, deployment simulation, and scheduled health checks.
+A complete **CI/CD + DevSecOps pipeline** built using **GitHub Actions**, **Docker**, **Flask**, and **GitHub Security** features. This project demonstrates automated testing, Docker image building, vulnerability scanning, deployment simulation, and scheduled health checks.
 
 ---
 
-# 📌 Project Overview
+## 📌 Project Overview
 
-This project contains a simple Flask application with a `/health` endpoint.
+This project automates the complete software delivery process:
 
-The application is:
-
-- Containerized using Docker
-- Tested automatically using GitHub Actions
-- Built and pushed to Docker Hub
-- Simulated deployment to a Production environment
-- Monitored every 12 hours using a scheduled Health Check workflow
+* ✅ Build & Test the application
+* 🐳 Build Docker images
+* 🔒 Scan Docker images using Trivy
+* 📦 Push images to Docker Hub
+* 🚀 Simulate deployment to Production
+* ❤️ Scheduled Health Check
+* 🔐 Secret Scanning & Push Protection
+* 📦 Dependency Vulnerability Review
 
 ---
 
-# 🛠 Tech Stack
+# 🛠️ Tech Stack
 
-- Python 3.12
-- Flask
-- Docker
-- GitHub Actions
-- Docker Hub
+* Python 3
+* Flask
+* Docker
+* GitHub Actions
+* Docker Hub
+* Trivy Security Scanner
+* GitHub Secret Scanning
+* Dependency Review Action
 
 ---
 
 # 📂 Project Structure
 
-```
-github-actions-capstone/
-│
-├── .github/
-│   └── workflows/
-│       ├── reusable-build-test.yml
-│       ├── reusable-docker.yml
-│       ├── pr-pipeline.yml
-│       ├── main-pipeline.yml
-│       └── health-check.yml
-│
-├── app.py
-├── Dockerfile
-├── requirements.txt
-├── test.sh
-└── README.md
+```text
+.github/
+└── workflows/
+    ├── reusable-build-test.yml
+    ├── reusable-docker.yml
+    ├── pr-pipeline.yml
+    ├── main-pipeline.yml
+    └── health-check.yml
+
+Dockerfile
+requirements.txt
+app.py
+README.md
+day-49-devsecops.md
 ```
 
 ---
 
-# 🌐 Flask Endpoint
+# ⚙️ GitHub Actions Workflows
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Returns application health status |
+### 🔹 PR Pipeline
 
-Example Response
+Runs whenever a Pull Request is opened or updated.
+
+* Build & Test
+* Dependency Vulnerability Review
+* PR Status Check
+
+---
+
+### 🔹 Main Pipeline
+
+Runs whenever code is pushed to the **main** branch.
+
+Workflow:
+
+```
+Build & Test
+      ↓
+Docker Build
+      ↓
+Trivy Image Scan
+      ↓
+Docker Push
+      ↓
+Deploy (Simulation)
+```
+
+---
+
+### 🔹 Health Check
+
+Runs:
+
+* Every 12 hours (Cron)
+* Manually using `workflow_dispatch`
+
+Steps:
+
+* Pull latest Docker image
+* Run container
+* Check `/health`
+* Generate GitHub Step Summary
+
+---
+
+# 🔒 DevSecOps Features
+
+## ✅ Trivy Image Scanning
+
+Scans Docker images for:
+
+* HIGH vulnerabilities
+* CRITICAL vulnerabilities
+
+Pipeline fails if critical vulnerabilities are detected.
+
+---
+
+## ✅ Dependency Review
+
+Checks newly added dependencies in Pull Requests.
+
+If a dependency contains a Critical vulnerability, the PR fails automatically.
+
+---
+
+## ✅ GitHub Secret Scanning
+
+Automatically detects leaked secrets such as:
+
+* API Keys
+* AWS Keys
+* Docker Tokens
+* Passwords
+
+---
+
+## ✅ Push Protection
+
+Blocks a push if GitHub detects a secret before it reaches the repository.
+
+---
+
+## 🔑 Workflow Permissions
+
+Workflows follow the **Principle of Least Privilege** by using:
+
+```yaml
+permissions:
+  contents: read
+```
+
+---
+
+# ❤️ Health Endpoint
+
+```
+GET /health
+```
+
+Response
 
 ```json
 {
-    "status": "ok"
+  "status": "ok"
 }
 ```
 
 ---
 
-# 🐳 Run Locally
+# ▶️ Run Locally
 
-## Clone Repository
-
-```bash
-git clone https://github.com/Dibyasha-Sahu/github-actions-capstone.git
-```
+Build Docker image
 
 ```bash
-cd github-actions-capstone
+docker build -t github-actions-capstone .
 ```
 
----
-
-## Build Docker Image
+Run container
 
 ```bash
-docker build -t capstone-app .
+docker run -d -p 5000:5000 github-actions-capstone
 ```
 
----
+Verify application
 
-## Run Container
-
-```bash
-docker run -d -p 5000:5000 capstone-app
+```
+http://localhost:5000/health
 ```
 
----
-
-## Check Running Containers
-
-```bash
-docker ps
-```
-
----
-
-## Run Health Test
-
-Open WSL / Git Bash
+Run health test
 
 ```bash
 bash test.sh
@@ -116,216 +193,76 @@ bash test.sh
 
 ---
 
-## Stop Container
+# 📈 Complete DevSecOps Pipeline
 
-```bash
-docker stop <container-id>
+```
+Pull Request
+      │
+      ▼
+Build & Test
+      │
+      ▼
+Dependency Review
+      │
+      ▼
+PR Passed
+
+────────────────────────────
+
+Merge to Main
+      │
+      ▼
+Build & Test
+      │
+      ▼
+Docker Build
+      │
+      ▼
+Trivy Security Scan
+      │
+      ▼
+Docker Push
+      │
+      ▼
+Deploy (Simulation)
+
+────────────────────────────
+
+Every 12 Hours
+      │
+      ▼
+Health Check
+
+────────────────────────────
+
+Always Active
+
+GitHub Secret Scanning
+
+GitHub Push Protection
 ```
 
 ---
 
-# ⚙️ GitHub Actions Workflows
+# 📚 Key Learnings
 
-## 1. Reusable Build & Test Workflow
-
-**File**
-
-```
-.github/workflows/reusable-build-test.yml
-```
-
-### Features
-
-- Checkout code
-- Setup Python
-- Install dependencies
-- Run pytest
-- Return test result
+* Reusable GitHub Actions Workflows
+* CI/CD Pipeline Design
+* Docker Image Build & Push
+* Trivy Vulnerability Scanning
+* Dependency Security Review
+* GitHub Secret Scanning
+* Push Protection
+* Workflow Permissions
+* Scheduled Automation
+* DevSecOps Best Practices
 
 ---
 
-## 2. Reusable Docker Build & Push Workflow
-
-**File**
-
-```
-.github/workflows/reusable-docker.yml
-```
-
-### Features
-
-- Checkout repository
-- Login to Docker Hub
-- Build Docker Image
-- Push Docker Image
-- Return Docker Image URL
-
----
-
-## 3. Pull Request Pipeline
-
-**File**
-
-```
-.github/workflows/pr-pipeline.yml
-```
-
-### Trigger
-
-- Pull Request → main
-
-### Jobs
-
-- Reusable Build & Test
-- PR Summary Job
-
-No Docker image is built during Pull Requests.
-
----
-
-## 4. Main Branch Pipeline
-
-**File**
-
-```
-.github/workflows/main-pipeline.yml
-```
-
-### Trigger
-
-- Push → main
-
-### Jobs
-
-1. Build & Test
-2. Docker Build & Push (latest)
-3. Docker Build & Push (sha tag)
-4. Deploy to Production Environment
-
----
-
-## 5. Scheduled Health Check
-
-**File**
-
-```
-.github/workflows/health-check.yml
-```
-
-### Trigger
-
-- Every 12 Hours
-- Manual (workflow_dispatch)
-
-### Steps
-
-- Login to Docker Hub
-- Pull Latest Docker Image
-- Start Container
-- Wait 5 Seconds
-- Health Check (/health)
-- Stop Container
-- Generate Workflow Summary
-
----
-
-# 🔄 CI/CD Pipeline Architecture
-
-```
-               Pull Request
-                     │
-                     ▼
-          Reusable Build & Test
-                     │
-                     ▼
-            PR Checks Passed
-```
-
-```
-                Push to Main
-                     │
-                     ▼
-          Reusable Build & Test
-                     │
-                     ▼
-      Docker Build & Push (latest)
-                     │
-                     ▼
-      Docker Build & Push (sha-tag)
-                     │
-                     ▼
-          Deploy to Production
-```
-
-```
-           Every 12 Hours
-                  │
-                  ▼
-        Pull Docker Image
-                  │
-                  ▼
-         Run Health Check
-                  │
-                  ▼
-         Generate Summary
-```
-
----
-
-# 📦 Docker Image Tags
-
-The project pushes two Docker image tags:
-
-- latest
-- sha-<commit-hash>
-
-Example
-
-```
-dibyasha27/github-actions-capstone:latest
-
-dibyasha27/github-actions-capstone:sha-abc1234
-```
-
----
-
-# 📊 Workflow Badges
-
-### Main Pipeline
-
-[![main-pipeline](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/main-pipeline.yml/badge.svg)](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/main-pipeline.yml)
-
----
-
-### PR Pipeline
-
-[![PR Pipeline](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/pr-pipeline.yml/badge.svg?branch=test-branch)](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/pr-pipeline.yml)
-
----
-
-### Health Check
-
-[![health-check.yml](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/health-check.yml/badge.svg?branch=main)](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/health-check.yml)
-
----
-
-### Reusable Docker Workflow
-
-[![Reusable Docker Build & Push](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/reusable-docker.yml/badge.svg)](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/reusable-docker.yml)
-
----
-
-### Reusable Build & Test
-
-[![Reusable Build and Test](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/reusable-build-test.yml/badge.svg?branch=test-branch)](https://github.com/Dibyasha-Sahu/github-actions-capstone/actions/workflows/reusable-build-test.yml)
-
----
-
-
-# 👩‍💻 Author
+# 👨‍💻 Author
 
 **Dibyasha Sahu**
 
-GitHub:
+MCA (Artificial Intelligence) | DevOps & Cloud Enthusiast
 
-https://github.com/Dibyasha-Sahu
+GitHub: https://github.com/Dibyasha-Sahu
